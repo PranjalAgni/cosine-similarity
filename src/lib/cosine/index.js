@@ -4,10 +4,10 @@
 const preprocessText = (text) => {
   return text
     .trim()
-    .replace(/[.|,]/, '')
-    .split(' ')
+    .replace(/[.|,]/, "")
+    .split(" ")
     .map((word) => word.toLowerCase())
-    .join(' ');
+    .join(" ");
 };
 
 /** 
@@ -15,7 +15,7 @@ const preprocessText = (text) => {
 */
 const getFrequencyMapOfText = (text) => {
   const freqMap = {};
-  const words = text.split(' ');
+  const words = text.split(" ");
   for (const word of words) {
     if (!freqMap[word]) freqMap[word] = 0;
     freqMap[word] += 1;
@@ -66,9 +66,7 @@ const dotProduct = (vectorA, vectorB) => {
   const M = vectorB.length;
 
   if (N !== M)
-    throw new Error(
-      'Cannot calculate dotproduct as vector dimensions not match'
-    );
+    throw new Error("Cannot calculate dotproduct as vector dimensions not match");
 
   let dotProductSum = 0;
   for (let idx = 0; idx < N; idx++) {
