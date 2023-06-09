@@ -1,27 +1,29 @@
-const express = require('express');
-const { cosineSimilarity } = require('./lib');
+const express = require("express");
+const helmet = require("helmet");
+const compression = require("compression");
+const { scrapeTweetReplies } = require("./lib");
 const app = express();
 
+app.use(compression());
+app.use(helmet());
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  console.log('Query string ', req.query);
-  const textA = req.query.a;
-  const textB = req.query.b;
+app.get("/", async (req, res) => {
+  console.log("Query string ", req.query);
 
-  if (textA && textB) {
-    const similarityScore = cosineSimilarity(textA, textB);
-
+  const tweetUrl = req.query.tweetUrl;
+  if (!tweetUrl)
     return res.json({
-      texts: [textA, textB],
-      message: `Similarity value between both is ${similarityScore}`,
+      message: "Twitter URL not specified"
     });
-  }
+
+  const replies = await scrapeTweetReplies(tweetUrl);
+
   res.json({
-    message: 'Hello word',
+    comments: replies
   });
 });
 
 app.listen(3000, () => {
-  console.log('Server running on port 3000');
+  console.log("Server running on port 3000");
 });
