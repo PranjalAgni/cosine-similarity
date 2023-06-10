@@ -2,6 +2,8 @@ const express = require("express");
 const helmet = require("helmet");
 const compression = require("compression");
 const { scrapeTweetReplies } = require("./lib");
+const { compareTwitterReplies } = require("./utils/compare");
+const { preprocessText } = require("./utils/sanatize");
 const app = express();
 
 app.use(compression());
@@ -17,10 +19,20 @@ app.get("/", async (req, res) => {
       message: "Twitter URL not specified"
     });
 
-  const replies = await scrapeTweetReplies(tweetUrl);
+  const replies = (await scrapeTweetReplies(tweetUrl)) ?? [];
+  const preprocessedReplies = replies.map((reply) => preprocessText(reply));
+  console.log("Twitter replies: ", preprocessedReplies);
 
-  res.json({
-    comments: replies
+  const tweetSimilarityMap = compareTwitterReplies(preprocessedReplies);
+  let responseObject = {};
+  for (const [targetTweet, [similarityScore, matchingTweet]] of tweetSimilarityMap) {
+    responseObject[targetTweet] = {
+      score: similarityScore,
+      match: matchingTweet
+    };
+  }
+  return res.json({
+    cosineSimilarity: responseObject
   });
 });
 
