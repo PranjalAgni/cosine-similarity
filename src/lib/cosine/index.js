@@ -1,18 +1,6 @@
 /** 
 @param {string} text
 */
-const preprocessText = (text) => {
-  return text
-    .trim()
-    .replace(/[.|,]/, "")
-    .split(" ")
-    .map((word) => word.toLowerCase())
-    .join(" ");
-};
-
-/** 
-@param {string} text
-*/
 const getFrequencyMapOfText = (text) => {
   const freqMap = {};
   const words = text.split(" ");
