@@ -24,7 +24,6 @@ const bagOfWordVectorization = (vocabulary, text) => {
     wordToVector.push(freqMap[term] || 0);
   }
 
-  print(wordToVector);
   return wordToVector;
 };
 
@@ -35,6 +34,4 @@ const print = (vector) => {
   console.log(vector);
 };
 
-module.exports = {
-  bagOfWordVectorization
-};
+module.exports = bagOfWordVectorization;
