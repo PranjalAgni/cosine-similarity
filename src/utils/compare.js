@@ -1,5 +1,6 @@
-const { cosineSimilarity } = require("../lib");
-
+const cosineSimilarity = require("../lib/cosine");
+const bagOfWordVectorization = require("../lib/bag-of-words");
+const { removeDuplicateWords } = require("./text");
 /**
  *
  * @param {string[]} twitterReplies
@@ -35,7 +36,11 @@ const compareTwitterReplies = (twitterReplies) => {
       }
       // compare tweetId with currentTweetId
       const currentTweet = twitterReplies[currentTweetId];
-      const similarityScore = cosineSimilarity(targetTweet, currentTweet);
+      const vocabulary = removeDuplicateWords(`${targetTweet} ${currentTweet}`);
+      const targetVector = bagOfWordVectorization(vocabulary, targetTweet);
+      const currentVector = bagOfWordVectorization(vocabulary, currentTweet);
+      const similarityScore = cosineSimilarity(targetVector, currentVector);
+      console.log("Similarity score ", similarityScore);
       if (similarityScore > runningSimilarityScore) {
         runningSimilarityScore = similarityScore;
         runningMatchingTweet = currentTweet;

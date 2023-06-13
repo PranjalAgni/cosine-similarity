@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 const { scrapeTweetReplies } = require("./lib");
 const { compareTwitterReplies } = require("./utils/compare");
-const { preprocessText } = require("./utils/sanatize");
+const { preprocessText } = require("./utils/text");
 const app = express();
 
 app.use(compression());
@@ -21,8 +21,6 @@ app.get("/", async (req, res) => {
 
   const replies = (await scrapeTweetReplies(tweetUrl)) ?? [];
   const preprocessedReplies = replies.map((reply) => preprocessText(reply));
-  console.log("Twitter replies: ", preprocessedReplies);
-
   const tweetSimilarityMap = compareTwitterReplies(preprocessedReplies);
   let responseObject = {};
   for (const [targetTweet, [similarityScore, matchingTweet]] of tweetSimilarityMap) {
