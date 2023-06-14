@@ -1,8 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const compression = require("compression");
 const { scrapeTweetReplies } = require("./lib");
-const { compareTwitterReplies } = require("./utils/compare");
+const {
+  compareTwitterReplies,
+  compareTwitterRepliesWithEmbeddings
+} = require("./utils/compare");
 const { preprocessText } = require("./utils/text");
 const app = express();
 
@@ -14,6 +18,8 @@ app.get("/", async (req, res) => {
   console.log("Query string ", req.query);
 
   const tweetUrl = req.query.tweetUrl;
+  const isOpenAI = req.query?.openai ?? false;
+  console.log("isOpenAI ", isOpenAI);
   if (!tweetUrl)
     return res.json({
       message: "Twitter URL not specified"
@@ -21,7 +27,9 @@ app.get("/", async (req, res) => {
 
   const replies = (await scrapeTweetReplies(tweetUrl)) ?? [];
   const preprocessedReplies = replies.map((reply) => preprocessText(reply));
-  const tweetSimilarityMap = compareTwitterReplies(preprocessedReplies);
+  const tweetSimilarityMap = isOpenAI
+    ? await compareTwitterRepliesWithEmbeddings(preprocessedReplies)
+    : compareTwitterReplies(preprocessedReplies);
   let responseObject = {};
   for (const [targetTweet, [similarityScore, matchingTweet]] of tweetSimilarityMap) {
     responseObject[targetTweet] = {
