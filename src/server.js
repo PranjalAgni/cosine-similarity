@@ -8,6 +8,7 @@ const {
   compareTwitterRepliesWithEmbeddings
 } = require("./utils/compare");
 const { preprocessText } = require("./utils/text");
+const { getEmbeddings } = require("./lib/openai-embeddings");
 const app = express();
 
 app.use(compression());
@@ -39,6 +40,15 @@ app.get("/", async (req, res) => {
   }
   return res.json({
     cosineSimilarity: responseObject
+  });
+});
+
+app.get("/openai", async (req, res) => {
+  const text = req.query.text ?? "Hello there how are you doing today?";
+  const response = await getEmbeddings(text);
+  console.log("Embeddings ", JSON.stringify(response?.data, null, 2));
+  return res.json({
+    dump: JSON.stringify(response, null, 2)
   });
 });
 

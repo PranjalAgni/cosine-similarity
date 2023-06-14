@@ -11,17 +11,12 @@ const openai = new OpenAIApi(configuration);
  * @param {string} text
  */
 const getEmbeddings = async (text) => {
-  const embeddings = await openai.createEmbedding({
+  const response = await openai.createEmbedding({
     model: "text-embedding-ada-002",
     input: text
   });
 
-  console.log(
-    `Open AI embeddings for ${text} \n`,
-    JSON.stringify(embeddings, null, 2)
-  );
-
-  return embeddings;
+  return response;
 };
 
 module.exports = {
