@@ -1,7 +1,7 @@
 const cosineSimilarity = require("../lib/cosine");
 const bagOfWordVectorization = require("../lib/bag-of-words");
 const { removeDuplicateWords } = require("./text");
-const { getEmbeddings } = require("../lib/openai-embeddings");
+const { getEmbeddings } = require("../lib/hf-embeddings");
 /**
  *
  * @param {string[]} twitterReplies

@@ -8,7 +8,8 @@ const {
   compareTwitterRepliesWithEmbeddings
 } = require("./utils/compare");
 const { preprocessText } = require("./utils/text");
-const { getEmbeddings } = require("./lib/openai-embeddings");
+const openAIEmbeddings = require("./lib/openai-embeddings");
+const hfEmbeddings = require("./lib/hf-embeddings");
 const app = express();
 
 app.use(compression());
@@ -45,8 +46,16 @@ app.get("/", async (req, res) => {
 
 app.get("/openai", async (req, res) => {
   const text = req.query.text ?? "Hello there how are you doing today?";
-  const response = await getEmbeddings(text);
+  const response = await openAIEmbeddings.getEmbeddings(text);
   console.log("Embeddings ", JSON.stringify(response?.data, null, 2));
+  return res.json({
+    dump: JSON.stringify(response, null, 2)
+  });
+});
+
+app.get("/hf", async (req, res) => {
+  const text = req.query.text ?? "Hello there how are you doing today?";
+  const response = await hfEmbeddings.getEmbeddings(text);
   return res.json({
     dump: JSON.stringify(response, null, 2)
   });
