@@ -1,66 +1,35 @@
-require("dotenv").config();
 const express = require("express");
 const helmet = require("helmet");
 const compression = require("compression");
-const { scrapeTweetReplies } = require("./lib");
-const {
-  compareTwitterReplies,
-  compareTwitterRepliesWithEmbeddings
-} = require("./utils/compare");
-const { preprocessText } = require("./utils/text");
-const openAIEmbeddings = require("./lib/openai-embeddings");
-const hfEmbeddings = require("./lib/hf-embeddings");
-const app = express();
+const platformRouter = require("./controllers/platform");
+const middlewares = require("./middlewares");
 
-app.use(compression());
-app.use(helmet());
-app.use(express.json());
+/**
+ * Initializes the server
+ * @returns {express.Express}
+ */
+const initServer = () => {
+  const app = express();
 
-app.get("/", async (req, res) => {
-  console.log("Query string ", req.query);
+  // Initalize middlewares
+  app.use(compression());
+  app.use(helmet());
+  app.use(express.json());
 
-  const tweetUrl = req.query.tweetUrl;
-  const isOpenAI = req.query?.openai ?? false;
-  console.log("isOpenAI ", isOpenAI);
-  if (!tweetUrl)
-    return res.json({
-      message: "Twitter URL not specified"
+  // Setup routes
+  app.get("/", (_req, res) => {
+    res.json({
+      message: "🌱🦄🌈✨👋🌎🌍🌏✨🌈🦄🌱"
     });
-
-  const replies = (await scrapeTweetReplies(tweetUrl)) ?? [];
-  const preprocessedReplies = replies.map((reply) => preprocessText(reply));
-  const tweetSimilarityMap = isOpenAI
-    ? await compareTwitterRepliesWithEmbeddings(preprocessedReplies)
-    : compareTwitterReplies(preprocessedReplies);
-  let responseObject = {};
-  for (const [targetTweet, [similarityScore, matchingTweet]] of tweetSimilarityMap) {
-    responseObject[targetTweet] = {
-      score: similarityScore,
-      match: matchingTweet
-    };
-  }
-  return res.json({
-    cosineSimilarity: responseObject
   });
-});
 
-app.get("/openai", async (req, res) => {
-  const text = req.query.text ?? "Hello there how are you doing today?";
-  const response = await openAIEmbeddings.getEmbeddings(text);
-  console.log("Embeddings ", JSON.stringify(response?.data, null, 2));
-  return res.json({
-    dump: JSON.stringify(response, null, 2)
-  });
-});
+  app.use("/api/v1", platformRouter);
 
-app.get("/hf", async (req, res) => {
-  const text = req.query.text ?? "Hello there how are you doing today?";
-  const response = await hfEmbeddings.getEmbeddings(text);
-  return res.json({
-    dump: JSON.stringify(response, null, 2)
-  });
-});
+  // Error handling
+  app.use(middlewares.notFound);
+  app.use(middlewares.errorHandler);
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
-});
+  return app;
+};
+
+module.exports = { initServer };
