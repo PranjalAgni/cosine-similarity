@@ -6,6 +6,9 @@ const cosineSimilarity = require("./cosine");
  */
 const compareEmbeddings = (textWithEmbeddings) => {
   const results = [];
+  // Loop through each text and compare with the rest of the texts
+  // and find the one with the highest similarity score
+  // and push it to the results array
   for (let idx = 0; idx < textWithEmbeddings.length; idx++) {
     const sourceEmbedding = textWithEmbeddings[idx];
     let currentSimilarityScore = 0;
