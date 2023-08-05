@@ -13,7 +13,7 @@ const fetchCommentsOfVideo = async (videoId) => {
   const response = await youtube.commentThreads.list({
     part: ["snippet"],
     videoId,
-    maxResults: 30
+    maxResults: 100
   });
 
   const commentsList = response?.data?.items?.map((item) => {

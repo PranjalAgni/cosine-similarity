@@ -5,6 +5,9 @@ const HttpStatusCode = {
   INTERNAL_SERVER: 500
 };
 
+const THRESHOLD_SIMILARITY = 0.5;
+
 module.exports = {
-  HttpStatusCode
+  HttpStatusCode,
+  THRESHOLD_SIMILARITY
 };
