@@ -9,11 +9,11 @@ const youtube = google.youtube({
  * Fetch comment list by the videoId
  * @param {string} videoId
  */
-const fetchCommentsOfVideo = async (videoId) => {
+const fetchCommentsOfVideo = async (videoId, resultCount=50) => {
   const response = await youtube.commentThreads.list({
     part: ["snippet"],
     videoId,
-    maxResults: 100
+    maxResults: resultCount
   });
 
   const commentsList = response?.data?.items?.map((item) => {
